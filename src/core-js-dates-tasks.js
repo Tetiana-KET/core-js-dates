@@ -247,10 +247,24 @@ function getWeekNumberByDate(date) {
  * Date(2024, 0, 13) => Date(2024, 8, 13)
  * Date(2023, 1, 1) => Date(2023, 9, 13)
  */
-function getNextFridayThe13th(/* date */) {
-  throw new Error('Not implemented');
-}
+function getNextFridayThe13th(date) {
+  let next13th;
+  let month = date.getMonth();
+  let year = date.getFullYear();
 
+  while (date) {
+    next13th = new Date(year, month, 13);
+    if (next13th.getDay() === 5) {
+      return next13th;
+    }
+    month += 1;
+    if (month === 12) {
+      month = 0;
+      year += 1;
+    }
+  }
+  return next13th;
+}
 /**
  * Returns the quarter of the year for a given date.
  *
@@ -262,8 +276,19 @@ function getNextFridayThe13th(/* date */) {
  * Date(2024, 5, 1) => 2
  * Date(2024, 10, 10) => 4
  */
-function getQuarter(/* date */) {
-  throw new Error('Not implemented');
+function getQuarter(date) {
+  const month = date.getMonth();
+
+  if (month >= 0 && month <= 2) {
+    return 1;
+  }
+  if (month >= 3 && month <= 5) {
+    return 2;
+  }
+  if (month >= 6 && month <= 8) {
+    return 3;
+  }
+  return 4;
 }
 
 /**
@@ -284,8 +309,34 @@ function getQuarter(/* date */) {
  * { start: '01-01-2024', end: '15-01-2024' }, 1, 3 => ['01-01-2024', '05-01-2024', '09-01-2024', '13-01-2024']
  * { start: '01-01-2024', end: '10-01-2024' }, 1, 1 => ['01-01-2024', '03-01-2024', '05-01-2024', '07-01-2024', '09-01-2024']
  */
-function getWorkSchedule(/* period, countWorkDays, countOffDays */) {
-  throw new Error('Not implemented');
+function getWorkSchedule(period, countWorkDays, countOffDays) {
+  const dateFormate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const startDate = new Date(period.start.split('-').reverse().join('-'));
+  const endDate = new Date(period.end.split('-').reverse().join('-'));
+  const schedule = [];
+  let isWorkingDay = true;
+
+  const currentDate = new Date(startDate);
+
+  while (currentDate <= endDate) {
+    if (isWorkingDay) {
+      for (let i = 0; i < countWorkDays && currentDate <= endDate; i += 1) {
+        schedule.push(dateFormate(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    } else {
+      currentDate.setDate(currentDate.getDate() + countOffDays);
+    }
+    isWorkingDay = !isWorkingDay;
+  }
+
+  return schedule;
 }
 
 /**
