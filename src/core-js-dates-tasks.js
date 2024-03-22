@@ -227,16 +227,12 @@ function getWeekNumberByDate(date) {
   nearestMonday.setDate(
     currentDate.getDate() - ((currentDate.getDay() + 6) % 7)
   );
-
   const yearOfNearestMonday = nearestMonday.getFullYear();
-
   const firstDayOfYear = new Date(yearOfNearestMonday, 0, 1);
-
-  const diffDays = Math.floor(
+  const diffDays = Math.ceil(
     (nearestMonday - firstDayOfYear) / (24 * 60 * 60 * 1000)
   );
-  const weekNumber = Math.floor(diffDays / 7) + 1;
-
+  const weekNumber = Math.ceil(diffDays / 7) + 1;
   return weekNumber;
 }
 
